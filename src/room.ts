@@ -23,6 +23,9 @@ export class State extends Schema {
 interface RoomOptions {
   create?: boolean
   name?: string
+  userId?: string
+  maxClients?: number
+  passwordHash?: string
 }
 
 interface ClientAuth {}
@@ -30,15 +33,13 @@ interface ClientAuth {}
 export default class extends Room<any> {
   maxClients = 12
   name: string
+  options: RoomOptions
 
   onInit (options: RoomOptions = {}) {
-    lobby.addRoom(this)
     console.log("CREATING NEW ROOM")
     this.setState(new State())
-    this.name = options.name
-    this.setMetadata({
-      name: this.name,
-    })
+    this.options = options
+    lobby.addRoom(this)
   }
 
   onJoin (client: Client, options: RoomOptions = {}, auth: ClientAuth) {
