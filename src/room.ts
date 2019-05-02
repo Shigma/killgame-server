@@ -1,3 +1,4 @@
+import { lobby } from './lobby'
 import { Room, Client } from 'colyseus'
 import { Schema, type, MapSchema } from "@colyseus/schema"
 
@@ -31,6 +32,7 @@ export default class extends Room<any> {
   name: string
 
   onInit (options: RoomOptions = {}) {
+    lobby.addRoom(this)
     console.log("CREATING NEW ROOM")
     this.setState(new State())
     this.name = options.name
@@ -55,5 +57,9 @@ export default class extends Room<any> {
 
   onLeave (client: Client) {
     console.log("ChatRoom:", client.sessionId, "left!")
+  }
+
+  onDispose() {
+    lobby.disposeRoom(this)
   }
 }
