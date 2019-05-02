@@ -1,6 +1,4 @@
-import * as path from 'path'
 import express from 'express'
-import serveIndex from 'serve-index'
 import { createServer } from 'http'
 import { Server } from 'colyseus'
 import { monitor } from '@colyseus/monitor'
@@ -16,9 +14,6 @@ const gameServer = new Server({
 })
 
 gameServer.register('killgame', Room)
-
-app.use('/', express.static(path.join(__dirname, 'static')))
-app.use('/', serveIndex(path.join(__dirname, 'static'), {icons: true}))
 
 // (optional) attach web monitoring panel
 app.use('/colyseus', monitor(gameServer))

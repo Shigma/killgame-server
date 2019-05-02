@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "tsc": "tsc -b",
-    "start": "yarn tsc & node dist"
+    "dev": "yarn tsc & yarn start",
+    "start": "node dist",
+    "tsc": "tsc -b"
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
@@ -16,7 +17,6 @@
   "dependencies": {
     "@colyseus/monitor": "^0.10.0",
     "colyseus": "^0.10.7",
-    "express": "^4.16.4",
-    "serve-index": "^1.9.1"
+    "express": "^4.16.4"
   }
 }
