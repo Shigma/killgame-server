@@ -1,0 +1,22 @@
+{
+  "name": "killgame-server",
+  "main": "dist/index.js",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "tsc": "tsc -b",
+    "start": "yarn tsc & node dist"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.1",
+    "@types/node": "^11.13.8",
+    "@types/serve-index": "^1.7.29",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "@colyseus/monitor": "^0.10.0",
+    "colyseus": "^0.10.7",
+    "express": "^4.16.4",
+    "serve-index": "^1.9.1"
+  }
+}
