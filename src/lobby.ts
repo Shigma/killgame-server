@@ -1,4 +1,5 @@
 import { Room, Client } from 'colyseus'
+import { getTimeInfo } from './utils'
 import GameRoom from './room'
 import chalk from 'chalk'
 
@@ -23,7 +24,7 @@ export default class Lobby extends Room {
         name,
         maxClients,
         ownerId: userId,
-        clients: room.clients.map(client => client.sessionId),
+        clients: room.clients.map(client => client.id),
       }
     })
   }
@@ -42,15 +43,15 @@ export default class Lobby extends Room {
     })
   }
 
-  addRoom (room: GameRoom) {
+  createRoom (room: GameRoom) {
     this._rooms[room.roomId] = room
-    console.log('room add:', room.roomId)
+    console.log(`${getTimeInfo()} room create: ${room.info}`)
     this.broadcastRooms()
   }
 
-  disposeRoom (room: GameRoom) {
+  removeRoom (room: GameRoom) {
     delete this._rooms[room.roomId]
-    console.log('room remove:', room.roomId)
+    console.log(`${getTimeInfo()} room remove: ${room.info}`)
     this.broadcastRooms()
   }
 
@@ -59,18 +60,22 @@ export default class Lobby extends Room {
     console.log(chalk.yellowBright('Lobby initialized.'))
   }
 
+  userInfo (client: Client) {
+    const { name } = this._users[client.id]
+    return chalk`{cyanBright ${name}} {gray (${client.id})}`
+  }
+
   onJoin (client: Client, options: UserOptions, auth) {
     const { name } = options
-    this._users[client.sessionId] = { name }
-    console.log('client join:', `${chalk.cyanBright(name)} (${client.sessionId})`)
+    this._users[client.id] = { name }
+    console.log(`${getTimeInfo()} client join: ${this.userInfo(client)}`)
     this.broadcastRooms()
     this.broadcastUsers()
   }
 
   onLeave (client: Client, consented: boolean) {
-    const { name } = this._users[client.sessionId]
-    console.log('client leave:', `${chalk.cyanBright(name)} (${client.sessionId})`)
-    delete this._users[client.sessionId]
+    console.log(`${getTimeInfo()} client leave: ${this.userInfo(client)}`)
+    delete this._users[client.id]
     this.broadcastUsers()
   }
 

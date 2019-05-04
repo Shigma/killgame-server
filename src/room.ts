@@ -1,4 +1,6 @@
+import chalk from 'chalk'
 import { lobby } from './lobby'
+import { getTimeInfo } from './utils'
 import { Room, Client } from 'colyseus'
 import { Schema, type, MapSchema } from "@colyseus/schema"
 
@@ -32,35 +34,40 @@ interface ClientAuth {}
 
 export default class extends Room<any> {
   maxClients = 12
-  name: string
   options: RoomOptions
+  lobby = lobby
 
   onInit (options: RoomOptions = {}) {
-    console.log("CREATING NEW ROOM")
     this.setState(new State())
     this.options = options
-    lobby.addRoom(this)
+    lobby.createRoom(this)
   }
 
   onJoin (client: Client, options: RoomOptions = {}, auth: ClientAuth) {
-    console.log("JOINING ROOM")
+    console.log(`${getTimeInfo()} client ${this.lobby.userInfo(client)} joined room ${this.info}.`)
+    this.lobby.broadcastRooms()
   }
 
-  requestJoin (options: RoomOptions = {}, isNewRoom: boolean) {
-    return options.create
-      ? options.create && isNewRoom
-      : this.clients.length > 0
+  onLeave (client: Client) {
+    console.log(`${getTimeInfo()} client ${this.lobby.userInfo(client)} left room ${this.info}.`)
+    this.lobby.broadcastRooms()
+  }
+
+  get info () {
+    return chalk`{greenBright ${this.options.name}} {gray (${this.roomId})}`
+  }
+
+  requestJoin (options: RoomOptions, isNewRoom: boolean) {
+    if (!lobby || !options.userId) return false
+    if (options.create) return !!options.name && isNewRoom
+    return this.clients.length > 0 && this.clients.every(client => client.id !== options.userId)
   }
 
   onMessage (client: Client, message: any) {
     console.log('message', message)
   }
 
-  onLeave (client: Client) {
-    console.log("ChatRoom:", client.sessionId, "left!")
-  }
-
   onDispose() {
-    lobby.disposeRoom(this)
+    lobby.removeRoom(this)
   }
 }
